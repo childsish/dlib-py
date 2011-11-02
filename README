@@ -1,5 +1,5 @@
 Needs local copies of Boost::Python and dlib
-Currently only an RVM module has been implemented (that's what I'm interested in).
+Currently only an RVM module has been implemented (that's what I'm interested in). This has been done in a mixture of C++ and Python due to the heavy use of templates in the dlib C++ Library. In future, I'll look for ways to compile directly to a more Pythonic module without needing any Python code.
 
 Installation:
 	1. Once everything is installed, copy the .sample file and remove the .sample extension.

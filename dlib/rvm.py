@@ -1,15 +1,15 @@
 import _rvm
 
-class RadialBasisKernel(rvm_binding.radial_basis_kernel):
+class RadialBasisKernel(_rvm.radial_basis_kernel):
     pass
 
-class PolynomialKernel(rvm_binding.polynomial_kernel):
+class PolynomialKernel(_rvm.polynomial_kernel):
     pass
 
-class SigmoidKernel(rvm_binding.sigmoid_kernel):
+class SigmoidKernel(_rvm.sigmoid_kernel):
     pass
 
-class LinearKernel(rvm_binding.linear_kernel):
+class LinearKernel(_rvm.linear_kernel):
     pass
 
 class Trainer(object):
@@ -38,19 +38,19 @@ class Trainer(object):
     
     def trainProbabilistic(self, samples, labels, folds=3):
         res = ProbabilisticFunction()
-        res.fn = rvm_binding.train_probabilistic_decision_function(self.trainer,
+        res.fn = _rvm.train_probabilistic_decision_function(self.trainer,
          VectorSample(samples), VectorDouble(labels), folds)
         return res
     
     def __getTrainer(self, kernel):
-        if issubclass(type(kernel), rvm_binding.radial_basis_kernel):
-            res = rvm_binding.rvm_trainer_rbf()
-        elif issubclass(type(kernel), rvm_binding.polynomial_kernel):
-            res = rvm_binding.rvm_trainer_ply()
-        elif issubclass(type(kernel), rvm_binding.sigmoid_kernel):
-            res = rvm_binding.rvm_trainer_sig()
-        elif issubclass(type(kernel), rvm_binding.linear_kernel):
-            res = rvm_binding.rvm_trainer_lin()
+        if issubclass(type(kernel), _rvm.radial_basis_kernel):
+            res = _rvm.rvm_trainer_rbf()
+        elif issubclass(type(kernel), _rvm.polynomial_kernel):
+            res = _rvm.rvm_trainer_ply()
+        elif issubclass(type(kernel), _rvm.sigmoid_kernel):
+            res = _rvm.rvm_trainer_sig()
+        elif issubclass(type(kernel), _rvm.linear_kernel):
+            res = _rvm.rvm_trainer_lin()
         else:
             raise TypeError('Unkown kernel type: %s'%(str(type(kernel))))
         res.set_kernel(kernel)
@@ -82,19 +82,19 @@ class RegressionTrainer(object):
     
     def trainProbabilistic(samples, labels, folds=3):
         res = ProbabilisticFunction()
-        res.fn = rvm_binding.train_probabilistic_decision_function(self.trainer,
+        res.fn = _rvm.train_probabilistic_decision_function(self.trainer,
          VectorSample(samples), VectorDouble(labels), folds)
         return res
     
     def __getTrainer(self, kernel):
-        if issubclass(type(kernel), rvm_binding.radial_basis_kernel):
-            res = rvm_binding.rvm_regression_trainer_rbf()
-        elif issubclass(type(kernel), rvm_binding.polynomial_kernel):
-            res = rvm_binding.rvm_regression_trainer_ply()
-        elif issubclass(type(kernel), rvm_binding.sigmoid_kernel):
-            res = rvm_binding.rvm_regression_trainer_sig()
-        elif issubclass(type(kernel), rvm_binding.linear_kernel):
-            res = rvm_binding.rvm_regression_trainer_lin()
+        if issubclass(type(kernel), _rvm.radial_basis_kernel):
+            res = _rvm.rvm_regression_trainer_rbf()
+        elif issubclass(type(kernel), _rvm.polynomial_kernel):
+            res = _rvm.rvm_regression_trainer_ply()
+        elif issubclass(type(kernel), _rvm.sigmoid_kernel):
+            res = _rvm.rvm_regression_trainer_sig()
+        elif issubclass(type(kernel), _rvm.linear_kernel):
+            res = _rvm.rvm_regression_trainer_lin()
         else:
             raise TypeError('Unknown kernel type: %s'%str(type(kernel)))
         res.set_kernel(kernel)
@@ -102,7 +102,7 @@ class RegressionTrainer(object):
 
 class VectorNormalizer(object):
     def __init__(self):
-        self.normalizer = rvm_binding.vector_normalizer()
+        self.normalizer = _rvm.vector_normalizer()
     
     def __call__(self, sample):
         res = self.normalizer(Sample(sample))
@@ -120,18 +120,18 @@ class DecisionFunction(object):
     
     #TODO: Implement pickling later
     def serialize(self, fname):
-        rvm_binding.serialize(self.fn, fname)
+        _rvm.serialize(self.fn, fname)
     
     #TODO: Implement pickling later
     @classmethod
     def deserialize(cls, fname):
-        for rvm_cls in (rvm_binding.decision_function_rbf,
-         rvm_binding.decision_function_ply,
-         rvm_binding.decision_function_sig,
-         rvm_binding.decision_function_lin):
+        for rvm_cls in (_rvm.decision_function_rbf,
+         _rvm.decision_function_ply,
+         _rvm.decision_function_sig,
+         _rvm.decision_function_lin):
             try:
                 fn = rvm_cls()
-                rvm_binding.deserialize(fn, fname)
+                _rvm.deserialize(fn, fname)
                 res = DecisionFunction()
                 res.fn = fn
                 return res
@@ -148,18 +148,18 @@ class ProbabilisticFunction(object):
     
     #TODO: Implement pickling later
     def serialize(self, fname):
-        rvm_binding.serialize(self.ndf, fname)
+        _rvm.serialize(self.ndf, fname)
     
     #TODO: Implement pickling later
     @classmethod
     def deserialize(cls, fname):
-        for rvm_cls in (rvm_binding.probabilistic_function_rbf,
-         rvm_binding.probabilistic_function_ply,
-         rvm_binding.probabilistic_function_sig,
-         rvm_binding.probabilistic_function_lin):
+        for rvm_cls in (_rvm.probabilistic_function_rbf,
+         _rvm.probabilistic_function_ply,
+         _rvm.probabilistic_function_sig,
+         _rvm.probabilistic_function_lin):
             try:
                 fn = rvm_cls()
-                rvm_binding.deserialize(fn, fname)
+                _rvm.deserialize(fn, fname)
                 res = ProbabilisticFunction()
                 res.fn = fn
                 return res
@@ -193,22 +193,22 @@ class NormalizedFunction(object):
     
     #TODO: Implement pickling later
     def serialize(self, fname):
-        rvm_binding.serialize(self.fn, fname)
+        _rvm.serialize(self.fn, fname)
     
     #TODO: Implement pickling later
     @classmethod
     def deserialize(cls, fname):
-        for rvm_cls in (rvm_binding.normalized_decision_function_rbf,
-         rvm_binding.normalized_decision_function_ply,
-         rvm_binding.normalized_decision_function_sig,
-         rvm_binding.normalized_decision_function_lin,
-         rvm_binding.normalized_probabilistic_function_rbf,
-         rvm_binding.normalized_probabilistic_function_ply,
-         rvm_binding.normalized_probabilistic_function_sig,
-         rvm_binding.normalized_probabilistic_function_lin):
+        for rvm_cls in (_rvm.normalized_decision_function_rbf,
+         _rvm.normalized_decision_function_ply,
+         _rvm.normalized_decision_function_sig,
+         _rvm.normalized_decision_function_lin,
+         _rvm.normalized_probabilistic_function_rbf,
+         _rvm.normalized_probabilistic_function_ply,
+         _rvm.normalized_probabilistic_function_sig,
+         _rvm.normalized_probabilistic_function_lin):
             try:
                 fn = rvm_cls()
-                rvm_binding.deserialize(fn, fname)
+                _rvm.deserialize(fn, fname)
                 # Create a temporary DecisionFunction because the NormalizedFunction
                 #  constructor expects a Python object
                 tmp = DecisionFunction()
@@ -221,41 +221,41 @@ class NormalizedFunction(object):
         raise RuntimeError('Unable to deserialize file. Unknown function type.')
     
     def __getNormalizedFunction(self, function):
-        if issubclass(type(function), rvm_binding.decision_function_rbf):
-            res = rvm_binding.normalized_decision_function_rbf()
-        elif issubclass(type(function), rvm_binding.decision_function_ply):
-            res = rvm_binding.normalized_decision_function_ply()
-        elif issubclass(type(function), rvm_binding.decision_function_sig):
-            res = rvm_binding.normalized_decision_function_sig()
-        elif issubclass(type(function), rvm_binding.decision_function_lin):
-            res = rvm_binding.normalized_decision_function_lin()
-        elif issubclass(type(function), rvm_binding.probabilistic_function_rbf):
-            res = rvm_binding.normalized_probabilistic_function_rbf()
-        elif issubclass(type(function), rvm_binding.probabilistic_function_ply):
-            res = rvm_binding.normalized_probabilistic_function_ply()
-        elif issubclass(type(function), rvm_binding.probabilistic_function_sig):
-            res = rvm_binding.normalized_probabilistic_function_sig()
-        elif issubclass(type(function), rvm_binding.probabilistic_function_lin):
-            res = rvm_binding.normalized_probabilistic_function_lin()
+        if issubclass(type(function), _rvm.decision_function_rbf):
+            res = _rvm.normalized_decision_function_rbf()
+        elif issubclass(type(function), _rvm.decision_function_ply):
+            res = _rvm.normalized_decision_function_ply()
+        elif issubclass(type(function), _rvm.decision_function_sig):
+            res = _rvm.normalized_decision_function_sig()
+        elif issubclass(type(function), _rvm.decision_function_lin):
+            res = _rvm.normalized_decision_function_lin()
+        elif issubclass(type(function), _rvm.probabilistic_function_rbf):
+            res = _rvm.normalized_probabilistic_function_rbf()
+        elif issubclass(type(function), _rvm.probabilistic_function_ply):
+            res = _rvm.normalized_probabilistic_function_ply()
+        elif issubclass(type(function), _rvm.probabilistic_function_sig):
+            res = _rvm.normalized_probabilistic_function_sig()
+        elif issubclass(type(function), _rvm.probabilistic_function_lin):
+            res = _rvm.normalized_probabilistic_function_lin()
         else:
             raise TypeError('Unknown function type: %s'%str(type(function)))
         res.function = function
         return res
 
 def VectorSample(x):
-    res = rvm_binding.vector_sample(len(x))
+    res = _rvm.vector_sample(len(x))
     for i in xrange(len(x)):
         res[i] = Sample(x[i])
     return res
 
 def VectorDouble(x):
-    res = rvm_binding.vector_double()
+    res = _rvm.vector_double()
     for i in xrange(len(x)):
         res.append(x[i])
     return res
 
 def Sample(x):
-    res = rvm_binding.sample(len(x))
+    res = _rvm.sample(len(x))
     for i in xrange(len(x)):
         res[i] = x[i]
     return res

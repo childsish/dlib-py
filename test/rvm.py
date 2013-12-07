@@ -6,7 +6,8 @@ Created on 28.03.2013
 
 import math
 
-from dlib import rvm
+from dlib import _rvm
+from dlib.rvm import *
 from unittest import TestCase
 
 class TestVectorNormaliser(TestCase):
@@ -49,7 +50,7 @@ def test_rvc():
     
     fn.serialize("saved_function.dat")
     fn = NormalizedFunction.deserialize("saved_function.dat")
-    print fn((x, y))
+    print 'Testing deserialized function: %s'%fn((x, y))
     
     pfn = NormalizedFunction(trainer.trainProbabilistic(samples, labels), normalizer)
     
@@ -61,7 +62,7 @@ def test_rvc():
     
     pfn.serialize("saved_function.dat")
     pfn = NormalizedFunction.deserialize("saved_function.dat")
-    print pfn(s)
+    print 'Testing deserialized function: %s'%pfn(s)
 
 def test_rvr():
     samples = []
@@ -71,7 +72,7 @@ def test_rvr():
         samples.append((x,))
         labels.append(sinc(x))
     
-    gamma = 2.0 / rvm_binding.compute_mean_squared_distance(VectorSample(samples))
+    gamma = 2.0 / _rvm.compute_mean_squared_distance(VectorSample(samples))
     trainer = RegressionTrainer(RadialBasisKernel(gamma), 0.00001)
     print 'using gamma of', gamma
     
@@ -84,8 +85,12 @@ def test_rvr():
     
     fn.serialize("saved_function.dat")
     fn = DecisionFunction.deserialize("saved_function.dat")
-    print fn(m)
+    print 'Testing deserialized funtcion: %s'%fn(m)
 
 def main():
     test_rvc()
     test_rvr()
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())

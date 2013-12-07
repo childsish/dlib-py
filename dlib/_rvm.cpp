@@ -122,7 +122,9 @@ class_<rvm_trainer<K> >* register_trainer(const char* suffix) {
 	
 	buf = "decision_function_";
 	typedef decision_function<K> dfn;
-	register_function<dfn>(buf.append(suffix).c_str());
+	class_<dfn>* fn1 = register_function<dfn>(buf.append(suffix).c_str());
+        fn1->def_readonly("alpha", &dfn::alpha);
+        fn1->def_readonly("basis_vectors", &dfn::basis_vectors);
 	
 	buf = "probabilistic_decision_function_";
 	typedef probabilistic_decision_function<K> pdfn;
@@ -134,14 +136,14 @@ class_<rvm_trainer<K> >* register_trainer(const char* suffix) {
 	
 	buf = "normalized_decision_function_";
 	typedef normalized_function<dfn> ndfn;
-	class_<ndfn>* fn1 = register_function<ndfn>(buf.append(suffix).c_str());
-	fn1->def_readwrite("normalizer", &ndfn::normalizer)
+	class_<ndfn>* fn2 = register_function<ndfn>(buf.append(suffix).c_str());
+	fn2->def_readwrite("normalizer", &ndfn::normalizer)
 	 .def_readwrite("function", &ndfn::function);
 	
 	buf = "normalized_probabilistic_function_";
 	typedef normalized_function<pfn> npdfn;
-	class_<npdfn>* fn2 = register_function<npdfn>(buf.append(suffix).c_str());
-	fn2->def_readwrite("normalizer", &npdfn::normalizer)
+	class_<npdfn>* fn3 = register_function<npdfn>(buf.append(suffix).c_str());
+	fn3->def_readwrite("normalizer", &npdfn::normalizer)
 	 .def_readwrite("function", &npdfn::function);
 	
 	return cls;
@@ -163,7 +165,7 @@ class_<rvm_regression_trainer<K> >* register_regression_trainer(const char* suff
 
 //! The main module function
 
-BOOST_PYTHON_MODULE(rvm_binding) {
+BOOST_PYTHON_MODULE(_rvm) {
 	class_<sample_type>("sample")
 	 .def(init<long>())
 	 .def("__len__", &sample_type::size)

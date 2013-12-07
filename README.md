@@ -6,9 +6,10 @@ Needs local copies of Boost::Python and dlib
 
 Installation
 ------------
-1.	Once everything is installed, copy the .sample file and remove the .sample extension.
-2.	Make sure all the "/path/to" directories point to the respective Boost and dlib libraries. 
-3.	Type "bjam" on the command line.
+1. Install Boost::Python
+2. Install dlib
+3. Run:
+    python setup.py install
 
 Notes
 -----

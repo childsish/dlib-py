@@ -118,6 +118,17 @@ class DecisionFunction(object):
     def __call__(self, val):
         return self.fn(Sample(val))
     
+    @property
+    def alpha(self):
+        return [self.fn.alpha[i] for i in xrange(len(self.fn.alpha))]
+    
+    @property
+    def basis_vectors(self):
+        cpp_vectors = [self.fn.basis_vectors[i]
+            for i in xrange(len(self.fn.basis_vectors))]
+        return [[vector[i] for i in xrange(len(vector))]
+            for vector in cpp_vectors]
+    
     #TODO: Implement pickling later
     def serialize(self, fname):
         _rvm.serialize(self.fn, fname)
@@ -145,6 +156,17 @@ class ProbabilisticFunction(object):
     
     def __call__(self, val):
         return self.fn(Sample(val))
+    
+    @property
+    def alpha(self):
+        return [self.fn.alpha[i] for i in xrange(len(self.fn.alpha))]
+
+    @property
+    def basis_vectors(self):
+        container = self.fn.decision_funct.basis_vectors
+        cpp_vectors = [container[i] for i in xrange(len(container))]
+        return [[vector[i] for i in xrange(len(vector))]
+            for vector in cpp_vectors]
     
     #TODO: Implement pickling later
     def serialize(self, fname):
@@ -190,6 +212,24 @@ class NormalizedFunction(object):
         tmp = self.fn.normalizer
         self.fn = self.__getNormalizedFunction(function)
         self.fn.normalizer = tmp
+    
+    @property
+    def alpha(self):
+        container = self.fn.function.alpha
+        return [container[i] for i in xrange(len(container))]
+    
+    @property
+    def basis_vectors(self):
+        if hasattr(self.fn, 'funct'):
+            container = self.fn.funct.basis_vectors
+        elif hasattr(self.fn, 'function'):
+            container = self.fn.function.basis_vectors
+        else:
+            raise NotImplementedError('Unable to determine function type')
+        cpp_vectors = [container[i]
+            for i in xrange(len(container))]
+        return [[vector[i] for i in xrange(len(vector))]
+            for vector in cpp_vectors]
     
     #TODO: Implement pickling later
     def serialize(self, fname):
@@ -243,13 +283,13 @@ class NormalizedFunction(object):
         return res
 
 def VectorSample(x):
-    res = _rvm.vector_sample(len(x))
+    res = _rvm.vector_of_sample(len(x))
     for i in xrange(len(x)):
         res[i] = Sample(x[i])
     return res
 
 def VectorDouble(x):
-    res = _rvm.vector_double()
+    res = _rvm.vector_of_scalar()
     for i in xrange(len(x)):
         res.append(x[i])
     return res
